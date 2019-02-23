@@ -4,7 +4,7 @@
 
 `SweetXml` is a thin wrapper around `:xmerl`. It allows you to convert a
 `char_list` or `xmlElement` record as defined in `:xmerl` to an elixir value such
-as `map`, `list`, `string`, `integer`, `float` or any combination of these.
+as `map`, `list`, `string`, `integer`, `float`, `boolean` or any combination of these.
 
 
 ## Examples
@@ -195,24 +195,17 @@ is being returned.
     'i' stands for (i)nteger. This forces `xpath/2` to return the value as
     integer instead of a char list.
 
-  * `~x//some/path"I`
+  * `~x"//some/path"il` - integer list.
 
-    'I' stands for soft (I)nteger. This forces `xpath/2` to return the value as
-    integer instead of a char list, but if node content is incompatible with an integer, 
-    set `0`.
-    
   * `~x"//some/path"f`
 
     'f' stands for (f)loat. This forces `xpath/2` to return the value as
     float instead of a char list.
 
-  * `~x//some/path"F`
+  * `~x"//some/path"b`
 
-    'F' stands for soft (F)loat. This forces `xpath/2` to return the value as
-    float instead of a char list, but if node content is incompatible with a float, 
-    set `0.0`.
-
-  * `~x"//some/path"il` - integer list.
+    'b' stands for (b)oolean. This forces `xpath/2` to return the value as
+    boolean instead of the char lists `'true'` and `'false'`.
 
 If you use the *optional* modifier `o` together with a *soft* cast modifier
 (uppercase), then the value is set to `nil` when the value is not compatible
@@ -278,7 +271,7 @@ result = doc
 assert result == 'Match One'
 ```
 
-We can specify multiple namespace prefixes: 
+We can specify multiple namespace prefixes:
 
 ```elixir
 result = doc
