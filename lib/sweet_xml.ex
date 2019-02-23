@@ -200,7 +200,7 @@ defmodule SweetXml do
         ?i in modifiers -> :integer
         ?I in modifiers -> :soft_integer
         ?f in modifiers -> :float
-        ?b in modifiers -> :boolean
+        ?F in modifiers -> :soft_float
         :otherwise -> false
       end
     }
@@ -662,11 +662,39 @@ defmodule SweetXml do
     end
   end
 
-  defp to_cast(value, false), do: value
-  defp to_cast(value, :string), do: to_string(value)
-  defp to_cast(value, :integer), do: String.to_integer(to_string(value))
-  defp to_cast(value, :float), do: String.to_float(to_string(value))
-  defp to_cast('true', :boolean), do: true
-  defp to_cast('false', :boolean), do: false
-
+  defp to_cast(value, false, _is_opt?), do: value
+  defp to_cast(nil, _, true), do: nil
+  defp to_cast(value, :string, _is_opt?), do: to_string(value)
+  defp to_cast(value, :integer, _is_opt?), do: String.to_integer(to_string(value))
+  defp to_cast(value, :float, _is_opt?) do
+   {float,_} = Float.parse(to_string(value))
+   float
+  end
+  defp to_cast(value, :soft_string, is_opt?) do
+    if String.Chars.impl_for(value) do
+      to_string(value)
+    else
+      if is_opt?, do: nil, else: ""
+    end
+  end
+  defp to_cast(value, :soft_integer, is_opt?) do
+    if String.Chars.impl_for(value) do
+      case Integer.parse(to_string(value)) do
+        :error-> if is_opt?, do: nil, else: 0
+        {int,_}-> int
+      end
+    else
+      if is_opt?, do: nil, else: 0
+    end
+  end
+  defp to_cast(value, :soft_float, is_opt?) do
+    if String.Chars.impl_for(value) do
+      case Float.parse(to_string(value)) do
+        :error-> if is_opt?, do: nil, else: 0.0
+        {float,_}->float
+      end
+    else
+      if is_opt?, do: nil, else: 0.0
+    end
+  end
 end
